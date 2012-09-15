@@ -35,8 +35,8 @@ int LED_direction;
 
 const long minUS = 500; //minimum servo angle in microseconds
 const long maxUS = 1300; //maximum servo angle in microseconds
-const long minSpeed = 200; //minimum servo speed in milliseconds - aSpeed range
-const long maxSpeed = 3000; //maximum servo speed in milliseconds - aSpeed range
+const long minSpeed = 3000; //minimum servo speed in milliseconds - aSpeed range
+const long maxSpeed = 200; //maximum servo speed in milliseconds - aSpeed range
 
 long servo_current;
 long servo_start_time;
@@ -64,16 +64,19 @@ void setup()
   
   randomSeed(analogRead(0)); //seed random number generator from floating unused analog input
   
-  //servo_current = minUS;
+  servo_direction = reverse;
+  servo_current = minUS;
+  servo_start = servo_current;
+  servo_end = maxUS;
+  servo_end_time = millis();
+  Servo1.writeMicroseconds(minUS);
   
-  LED_direction = reverse_wait;
-  LED_end_time = millis();
+  LED_direction = reverse;
   LED_current = 0;
+  LED_end_time = millis();
   
   Update();
-  
-
-  
+    
 }
 
 void loop()
@@ -114,13 +117,33 @@ void Update()
     
     LED_start = LED_current;
     LED_start_time = millis();
-    
   }
   
+   if(millis() >= servo_end_time)
+  {
+    if(servo_direction == forward)
+    {
+      servo_direction = reverse;
+      servo_end = minUS;
+    }
+    else if(servo_direction == reverse)
+    {
+      servo_direction = forward;
+      servo_end = maxUS;
+    }
+    
+    servo_start = servo_current;
+    
+    servo_end_time = millis() + minSpeed; //map(analogRead(aSpeed),0,255,minSpeed,maxSpeed); 
+    servo_start_time = millis();
+  } 
+  
   LED_current = map(millis(),LED_start_time, LED_end_time, LED_start, LED_end);
-  //if(LED_end = 0 && millis() >= LED_end_time){LED_current = 0;}
   if(LED_current < minLED){LED_current = 0;}
-  //Servo1.writeMicroseconds(servo_current);
+  
+  servo_current = map(millis(),servo_start_time, servo_end_time, servo_start, servo_end);
+  
+  Servo1.writeMicroseconds(servo_current);
   analogWrite(pinLED,LED_current); 
   
   //Debug();
@@ -129,14 +152,19 @@ void Update()
 
 void Debug()
 {
-  Serial.print(LED_current);Serial.print(" ");
   Serial.print(millis());Serial.print(" ");
-  Serial.print(LED_direction);Serial.print(" ");
-  Serial.print(LED_start_time);Serial.print(" ");
-  Serial.print(LED_end_time);Serial.print(" ");
-  Serial.print(LED_start);Serial.print(" ");
-  Serial.println(LED_end);
-   
-  delay(200);
+  
+  //Serial.print(LED_current);Serial.print(" ");
+  //Serial.print(LED_end_time);Serial.print(" ");
+  
+  Serial.print(servo_current);Serial.print(" ");
+  Serial.print(servo_start_time);Serial.print(" ");
+  Serial.print(servo_end_time);Serial.print(" ");
+  Serial.print(servo_direction);Serial.print(" ");
+  Serial.print(servo_start);Serial.print(" ");
+  Serial.print(servo_end);Serial.print(" ");  
+  
+  Serial.println("");
+  delay(100);
 }
 
