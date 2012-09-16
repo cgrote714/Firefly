@@ -33,8 +33,8 @@ long LED_end_time;
 long LED_end;
 int LED_direction;
 
-const long minUS = 500; //minimum servo angle in microseconds
-const long maxUS = 1300; //maximum servo angle in microseconds
+const long maxUS = 700; //minimum servo angle in microseconds
+const long minUS = 2400; //maximum servo angle in microseconds
 const long minSpeed = 3000; //minimum servo speed in milliseconds - aSpeed range
 const long maxSpeed = 200; //maximum servo speed in milliseconds - aSpeed range
 
@@ -54,14 +54,6 @@ void setup()
   pinMode(aSpeed, INPUT);
   pinMode(aBright, INPUT);
   
-  Servo1.writeMicroseconds(minUS);
-  analogWrite(pinLED,maxLED);
-  delay(1000);
-  analogWrite(pinLED,minLED);
-  delay(2000);
-  analogWrite(pinLED,0);
-  delay(2000);
-  
   randomSeed(analogRead(0)); //seed random number generator from floating unused analog input
   
   servo_direction = reverse;
@@ -69,7 +61,14 @@ void setup()
   servo_start = servo_current;
   servo_end = maxUS;
   servo_end_time = millis();
-  Servo1.writeMicroseconds(minUS);
+  //Servo1.writeMicroseconds(minUS);
+  
+  analogWrite(pinLED,maxLED);
+  delay(1000);
+  analogWrite(pinLED,minLED);
+  delay(2000);
+  analogWrite(pinLED,0);
+  delay(2000);
   
   LED_direction = reverse;
   LED_current = 0;
